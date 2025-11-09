@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProperty scope="context" name="SPRING_APP_NAME" source="spring.application.name"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] [%5p] [${SPRING_APP_NAME}]
+                [session-id=%X{session-id}]
+                [traceId=%X{X-B3-TraceId}]
+                [%c{36}::%L::%M] -- %m%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Direct logs to Logstash in JSON -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>logstash:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+    </appender>
+
+    <!-- Dev profile -->
+    <springProfile name="dev">
+        <root level="debug">
+            <appender-ref ref="STDOUT" />
+<!--            <appender-ref ref="CONSOLE"/>-->
+        </root>
+    </springProfile>
+
+    <!-- Prod profile -->
+    <springProfile name="prod">
+        <root level="info">
+            <appender-ref ref="STDOUT" />
+            <appender-ref ref="LOGSTASH" />
+        </root>
+    </springProfile>
+
+</configuration>

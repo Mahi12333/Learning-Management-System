@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: bitnami/elasticsearch:8.17.1
+    container_name: elasticsearch
+    volumes:
+      - elasticsearch_data:/bitnami/elasticsearch
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+      - ELASTIC_PASSWORD=aHh12Kf8n3pB9q7s
+      - xpack.security.enabled=true
+    ports:
+      - "9300:9300"
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsSL http://localhost:9200/_cluster/health || exit 1" ]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 5s
+    networks:
+      - docker-backend
+
+  logstash:
+    image: bitnami/logstash:8.17.1
+    container_name: logstash
+    volumes:
+      - logstash_data:/bitnami/logstash
+      - ./logstash/logstash.conf:/etc/logstash/conf.d/logstash.conf
+    command: logstash -f /etc/logstash/conf.d/logstash.conf
+    ports:
+      - "5000:5000"
+    networks:
+      - docker-backend
+
+  kibana:
+    image: bitnami/kibana:8.17.1
+    container_name: kibana
+    volumes:
+      - kibana_data:/bitnami/kibana
+    ports:
+      - "5601:5601"
+    environment:
+      KIBANA_ELASTICSEARCH_URL: http://elasticsearch:9200
+      KIBANA_ELASTICSEARCH_USERNAME: elastic
+      KIBANA_ELASTICSEARCH_PASSWORD: aHh12Kf8n3pB9q7s
+      xpack.encryptedSavedObjects.encryptionKey: "a_secure_random_key_that_is_32_chars_long"
+    depends_on:
+      - elasticsearch
+    networks:
+      - docker-backend
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: Neutopiya
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - docker-backend
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - springboot-app
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+  springboot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-app
+    depends_on:
+      - postgres
+      - elasticsearch
+      - logstash
+      - prometheus
+    ports:
+      - "5002:5002"  # This for Application
+      - "8080:8080"   # Actuator/metrics port
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Neutopiya
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Admin
+    networks:
+      - docker-backend
+
+volumes:
+  elasticsearch_data: {}
+  kibana_data: {}
+  logstash_data: {}
+  postgres_data: {}
+
+networks:
+  docker-backend:
+    driver: bridge

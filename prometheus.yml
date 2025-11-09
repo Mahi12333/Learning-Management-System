@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s   # har 5 sec mein scrape karega
+
+scrape_configs:
+  - job_name: "nutopiya-springboot-app"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:8080"]   # ya docker service name:8080

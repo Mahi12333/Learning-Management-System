@@ -1,0 +1,131 @@
+spring:
+  application:
+    name: Learning-Management-System-Project
+
+  app:
+    JWT_ACCESS_SECRET_KEY: mySecretKeyspkmndfsopkvajoirjgfpfngmoknmaccessToken
+    JWT_REFRESH_SECRET_KEY: mySe12738aopsgjnspderewtekmndfsopkvajoirjg9438357437348763refreshToken
+    jwtExpirationMs: 44000000
+    jwtRefreshExpirationMs: 66000000
+# docker image name will be used with  url: jdbc:postgresql://postgres:5432/Neutopiya
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/Neutopiya
+    username: postgres
+    password: Admin
+  jpa:
+    hibernate:
+      ddl-auto: update            #create
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+#  jpa:
+#    hibernate:
+#      ddl-auto: update            #create
+#      show-sql: true
+#      format_sql: true
+#  show-sql: true
+# open-in-view: true #false
+
+  servlet:
+    multipart:
+      enabled: true  # Enable multipart uploads   #file-size-threshold: 2KB  # Threshold after which files are written to disk
+      max-file-size: 100MB  # Max file size
+      max-request-size: 100MB  # Total Max request size
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: mahitosh.runtime@gmail.com
+    password: zorfqhzdulxxtprs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+      # Your custom property
+      domain_name: "Neutopiya-LMS"
+
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: "prometheus,health,metrics"
+    endpoint:
+      prometheus:
+        enabled: true
+
+
+  # GitHub OAuth2 configuration and Google OAuth2 configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23lia06jajuASLZlmz
+            client-secret: 88bfcaea70ab0ef399ba3a221987adb2bfd98cc5
+            scope:
+              - read:user
+              - user:email
+          google:
+            client-id: 424562023681-a991df3o7tnomrcdh1kf7gm39ts675fe.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
+server:
+  port: 5001
+
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans,threaddump,httpexchanges # or "*" in dev
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always  # "always" in dev; "when_authorized" in prod
+    metrics:
+      tags:
+        application: ${spring.application.name}
+    server:
+      port: 8080
+
+
+cloudinary:
+  cloud_name: dvxef5plb
+  api_key: 272592496495854
+  api_secret: KiAp22_2sT7GZ2AqZHcQEYkTZjE
+
+#URL
+FRONTEND_URL: "https://rapido-project-spring-boot.onrender.com,http://localhost:5173"
+FORGET_PASSWORD_URL: "http://localhost:4200"
+PROFILE_URL: "https://res.cloudinary.com/dvxef5plb/image/upload/v1761380580/profile_1761380577757.jpg.jpg"
+BACKGROUND_COVER_URL: "https://res.cloudinary.com/dvxef5plb/image/upload/v1761380844/profile_1761380841456.jpg.jpg"
+frontend:
+  url: "http://localhost:3000"
+
+#Only for application logs and error message (no SQL at all)
+#logging:
+#  level:
+#    org.hibernate.type: INFO
+#    com.maven.neutopiya: DEBUG
+
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # shows query params (optional)
+    com.maven.neuto: DEBUG
+
+
+
+
