@@ -1,10 +1,12 @@
 package com.maven.neuto.controller;
 
 import com.maven.neuto.payload.request.course.*;
+import com.maven.neuto.service.CourseService;
 import com.maven.neuto.utils.AppConstants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,14 +16,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/course")
 @RequiredArgsConstructor
 public class CourseController {
-
-   /* @PostMapping("/create-course")
+    private final CourseService courseService;
+/*
+    @PostMapping("/create-course")
     public ResponseEntity<?>createCourse(@Valid @RequestBody CourseCreateDTO request){
-
+        String response = courseService.createCourse(request);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+    @PostMapping("/update-course")
+    public ResponseEntity<?>updateCourse(@Valid @RequestBody UpdateCourseDTO request){
+        String response = courseService.updateCourse(request);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
     @GetMapping("/public-course")
-    public ResponseEntity<?>PublicCourse(@Valid @RequestBody  ){
-
+    public ResponseEntity<?>PublicCourse(){
+        String response = courseService.publicCourse(request);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @GetMapping("/student-ongoing-course")
@@ -37,8 +47,9 @@ public class CourseController {
     }
 
     @DeleteMapping("/delete-course")
-    public ResponseEntity<?> DeleteCourse(@Valid @RequestParam("slug") String slug){
-
+    public ResponseEntity<?> DeleteCourse(@Valid @RequestParam("id") Long id){
+         courseService.deleteCourse(id);
+        return new ResponseEntity<>("Course deleted successfully",HttpStatus.OK);
     }
 
     @GetMapping("/course-module-details-fetch")
@@ -142,8 +153,8 @@ public class CourseController {
 
     }
 
-    */
 
+  */
 
 
 

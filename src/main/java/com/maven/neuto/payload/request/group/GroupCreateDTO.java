@@ -26,5 +26,5 @@ public class GroupCreateDTO {
     private String about;
     private List<String> tags;
     private String imagesPath;
-    private Integer size;
+    private Long size;
 }

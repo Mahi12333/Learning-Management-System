@@ -32,20 +32,20 @@ public class SeedDataConfig {
             }
 
             // 2. Seed Super Admin
-            String email = "mahitosh.runtime@gmail.com";
+            String email = "sipore2779@canvect.com";
             if (userRepo.findByEmail(email).isEmpty()) {
-                Role role = roleRepo.findByName("SUPER-ADMIN")
+                Role role = roleRepo.findByName("TEACHER")
                         .orElseThrow(() -> new RuntimeException("Role not found"));
 
                 User user = new User();
-                user.setFirstName("Mahitosh");
+                user.setFirstName("Sipore");
                 user.setLastName("Giri");
                 user.setEmail(email);
                 user.setPassword(passwordEncoder.encode("Mahitosh@123"));
                 user.setRole(role);
                 user.setStatus(Status.ACTIVE);
                 user.setProfileComplete(ProfileComplete.COMPLETE);
-                user.setUserName("mahitosh.runtime");
+                user.setUserName("sipore2779@");
                 user.setStep(Step.THREE);
 
                 userRepo.save(user);

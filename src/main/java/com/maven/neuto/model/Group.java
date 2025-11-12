@@ -1,6 +1,7 @@
 package com.maven.neuto.model;
 
 
+import com.maven.neuto.config.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +42,7 @@ public class Group extends BaseEntity {
     @Column(name = "images_path")
     private String imagesPath;
 
+    @Convert(converter = StringListConverter.class)
     @Column(name = "tags", columnDefinition = "TEXT")
     private List<String> tags = new ArrayList<>();
 

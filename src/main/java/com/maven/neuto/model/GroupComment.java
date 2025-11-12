@@ -53,6 +53,12 @@ public class GroupComment extends BaseEntity {
     @JoinColumn(name = "reply_to_comment_id")
     private GroupComment replyToComment;
 
+
+    // 👇 Reverse side: Parent ↔ Replies
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupComment> replies = new ArrayList<>();
+
+
     // Likes on this group comment
     @OneToMany(mappedBy = "groupComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupCommentLike> likes = new ArrayList<>();

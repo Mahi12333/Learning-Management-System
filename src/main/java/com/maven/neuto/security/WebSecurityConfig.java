@@ -61,7 +61,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/users/otp-verify-password").permitAll()
                 .requestMatchers("/api/v1/users/reset-Password").permitAll()
                 .requestMatchers("/api/v1/users/refreshToken").permitAll()
-                .requestMatchers("/api/v1/users/teacher-member-invite").hasAnyRole("ADMIN", "TEACHER") // only admin can see all users
+                .requestMatchers("/api/v1/users/teacher-member-invite").hasAnyAuthority("ADMIN", "TEACHER") // only admin can see all users
                 .requestMatchers("/api/v1/users/logout").authenticated()
                 .requestMatchers("/api/v1/users/user-from-community").authenticated()
                 .requestMatchers("/api/v1/users/user-follow").authenticated()
@@ -81,21 +81,21 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/short-content/fetch-short-content").authenticated()
 
                 //! Course Part---
-                .requestMatchers("/api/v1/course/create-course").hasAnyRole("ADMIN", "TEACHER") // can do only admin and  Teacher
-                .requestMatchers("/api/v1/course/updated-course").hasAnyRole("ADMIN", "TEACHER") // can do only admin and owner of course
-                .requestMatchers("/api/v1/course/delete-course").hasAnyRole("ADMIN", "TEACHER") // can do only admin and owner of course
+                .requestMatchers("/api/v1/course/create-course").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and  Teacher
+                .requestMatchers("/api/v1/course/updated-course").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and owner of course
+                .requestMatchers("/api/v1/course/delete-course").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and owner of course
                 .requestMatchers("/api/v1/course/public-course").authenticated()
-                .requestMatchers("/api/v1/course/ongoing-course").hasAnyRole("STUDENT")
-                .requestMatchers("/api/v1/course/recommend-course").hasAnyRole("STUDENT")
+                .requestMatchers("/api/v1/course/ongoing-course").hasAnyAuthority("STUDENT")
+                .requestMatchers("/api/v1/course/recommend-course").hasAnyAuthority("STUDENT")
                 //! Group Part---
-                .requestMatchers("/api/v1/group/create-group").hasAnyRole("ADMIN", "TEACHER") // can do only admin and  Teacher
-                .requestMatchers("/api/v1/group/updated-group").hasAnyRole("ADMIN", "TEACHER") // can do only admin and owner of course
-                .requestMatchers("/api/v1/group/delete-group").hasAnyRole("ADMIN", "TEACHER") // can do only admin and owner of course
+                .requestMatchers("/api/v1/group/create-group").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and  Teacher
+                .requestMatchers("/api/v1/group/updated-group").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and owner of course
+                .requestMatchers("/api/v1/group/delete-group").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and owner of course
                 .requestMatchers("/api/v1/group/public-group").authenticated()
                 //! Event Part---
-                .requestMatchers("/api/v1/event/create-event").hasAnyRole("STUDENT")
-                .requestMatchers("/api/v1/event/updated-event").hasAnyRole("STUDENT")
-                .requestMatchers("/api/v1/event/delete-event").hasAnyRole("STUDENT")
+                .requestMatchers("/api/v1/event/create-event").hasAnyAuthority("STUDENT")
+                .requestMatchers("/api/v1/event/updated-event").hasAnyAuthority("STUDENT")
+                .requestMatchers("/api/v1/event/delete-event").hasAnyAuthority("STUDENT")
                 .requestMatchers("/api/v1/event/public-event").authenticated()
                 //! Conversation and Message Part---
                 .requestMatchers("/api/v1/message/sidebar-users").authenticated()
