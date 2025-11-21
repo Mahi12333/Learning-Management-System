@@ -31,7 +31,7 @@ public class EmailService {
     private String fromEmail;
 
 
-    @Async
+   /* @Async
     public CompletableFuture<Boolean> sendEmail(String to, String subject, String htmlContent) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
@@ -50,5 +50,38 @@ public class EmailService {
             log.error("Failed to send email to {}: {}", to, e.getMessage());
             throw new APIException("send.email.otp.failed", HttpStatus.BAD_REQUEST); // Localized key
         }
+    }*/
+
+    @Async
+    public CompletableFuture<String> sendEmail(String to, String subject, String htmlContent) {
+
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+                helper.setTo(to);
+                helper.setSubject(subject);
+                helper.setText(htmlContent, true);
+
+                String senderName = "Lernera";
+                helper.setFrom(new InternetAddress(fromEmail, senderName));
+
+                mailSender.send(message);
+                log.info("Email sent successfully to {}", to);
+
+                return "send.email.otp.success"; // Success
+
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                // This exception will be handled in exceptionally()
+                throw new RuntimeException("Email sending failed: " + e.getMessage(), e);
+            }
+
+        }).exceptionally(ex -> {
+            log.error("Async email error: {}", ex.getMessage());
+            throw new APIException("send.email.otp.failed", HttpStatus.BAD_REQUEST);
+            // return false;
+        });
     }
+
 }
