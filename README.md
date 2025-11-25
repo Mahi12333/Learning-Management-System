@@ -63,8 +63,8 @@ A complete **Learning Management System** built with **Java 17 & Spring Boot**, 
 ## 🛠️ Tech Stack
 
 | Component     | Technology                            |
-| ------------- | ------------------------------------- |
-| Backend       | Java 17, Spring Boot                  |
+| ------------- |---------------------------------------|
+| Backend       | Java 21, Spring Boot                   |
 | Security      | Spring Security, JWT                  |
 | Database      | MySQL or PostgreSQL                   |
 | ORM           | Hibernate, Spring Data JPA            |
@@ -233,7 +233,7 @@ This project is licensed under the **MIT License** — see `LICENSE` file.
 
 ## 📞 Contact
 
-Maintainer — Your Name ([mahitoshgiri287.email@example.com](mailto:your.email@example.com))
+Maintainer — Mahitosh Giri Name ([mahitoshgiri287.email@example.com](mailto:your.email@example.com))
 
 ---
 
