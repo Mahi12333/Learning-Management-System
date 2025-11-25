@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseService courseService;
-/*
+
     @PostMapping("/create-course")
     public ResponseEntity<?>createCourse(@Valid @RequestBody CourseCreateDTO request){
         String response = courseService.createCourse(request);
@@ -28,7 +28,7 @@ public class CourseController {
         String response = courseService.updateCourse(request);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
-    @GetMapping("/public-course")
+  /*  @GetMapping("/public-course")
     public ResponseEntity<?>PublicCourse(){
         String response = courseService.publicCourse(request);
         return new ResponseEntity<>(response,HttpStatus.CREATED);

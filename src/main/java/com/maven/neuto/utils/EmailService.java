@@ -30,7 +30,6 @@ public class EmailService {
     @Value("${spring.mail.username}") // Domain name from application properties
     private String fromEmail;
 
-
    /* @Async
     public CompletableFuture<Boolean> sendEmail(String to, String subject, String htmlContent) {
         try {
@@ -53,7 +52,7 @@ public class EmailService {
     }*/
 
     @Async
-    public CompletableFuture<String> sendEmail(String to, String subject, String htmlContent) {
+    public CompletableFuture<Boolean> sendEmail(String to, String subject, String htmlContent) {
 
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -69,9 +68,7 @@ public class EmailService {
 
                 mailSender.send(message);
                 log.info("Email sent successfully to {}", to);
-
-                return "send.email.otp.success"; // Success
-
+                return true; // Success
             } catch (MessagingException | UnsupportedEncodingException e) {
                 // This exception will be handled in exceptionally()
                 throw new RuntimeException("Email sending failed: " + e.getMessage(), e);
@@ -79,8 +76,8 @@ public class EmailService {
 
         }).exceptionally(ex -> {
             log.error("Async email error: {}", ex.getMessage());
-            throw new APIException("send.email.otp.failed", HttpStatus.BAD_REQUEST);
-            // return false;
+            //throw new APIException("send.email.otp.failed", HttpStatus.BAD_REQUEST);
+             return false;
         });
     }
 

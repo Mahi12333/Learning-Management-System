@@ -50,4 +50,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.userCommunity.id = :communityId AND u.status = :status AND u.profileComplete = :profile AND u.id <> :userId AND u.role.id <> :roleId")
     List<User> findAllByCommunityIdAndStatusAndProfileCompleteAndIdNotAndRoleIdNot(@Param("communityId") Long communityId, @Param("status") Status status, @Param("profile") ProfileComplete complete, @Param("userId") Long currentUserId, @Param("roleId") Long roleId);
+
+    @Query("SELECT u FROM User u WHERE u.profileComplete = 'PENDING'")
+    List<User> findAllByIncompleteProfile();
 }
