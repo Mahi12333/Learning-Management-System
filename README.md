@@ -1,153 +1,247 @@
-📚 Learning Management System (LMS)
+# 📚 Learning Management System (LMS)
 
-A complete Learning Management System built with Java Spring Boot, designed to manage courses, students, instructors, assignments, submissions, and more.
-This project demonstrates clean architecture, modular design, proper authentication, and real-world backend development practices.
+A complete **Learning Management System** built with **Java 17 & Spring Boot**, designed to manage courses, users (students / teachers), groups, communities, assignments, submissions, and content. This project demonstrates clean architecture, modular design, role-based access control, JWT authentication, and production-ready backend practices.
 
-🚀 Features
-👩‍🏫 User Management
+---
 
-Student & Instructor registration/login
+## 🚀 Features
 
-Role-based access (ADMIN / INSTRUCTOR / STUDENT)
+### 👩‍🏫 User Management
 
-Secure authentication with JWT / Spring Security
+* Student & Teacher registration / login
+* Role-based access (ADMIN / TEACHER / STUDENT)
+* Secure authentication using JWT + Spring Security
 
-📘 Course Management
+### 📘 Course Management
 
-Create, update, delete courses
+* Create, update, delete courses
+* Assign instructors to courses
+* Student enrollment to courses
+* Course categories and tags
 
-Assign instructors
+### 📝 Assignments & Submissions
 
-Enroll students
+* Instructors create assignments and deadlines
+* Students submit assignments (file/text)
+* Submission tracking and versioning
+* Grade management and feedback
 
-Course categories and tags
+### 🗂 Content Management
 
-📄 Assignments & Submissions
+* Upload videos, documents, notes
+* Optional cloud integration (Cloudinary or AWS S3)
+* Secure file access and signed URLs
 
-Instructor creates assignments
+### 🔔 Notifications
 
-Students submit work
+* Email notifications for:
 
-Submission tracking
+    * New course enrollment
+    * Assignment deadlines / reminders
+    * Grades published
 
-Grade management
+### 👥 Group Management
 
-🗂 Content Management
+* Create, update, delete groups
+* Assign students to groups
+* Group-level resources and activities
 
-Upload videos, documents, notes
+### 🌐 Community Management
 
-Cloud integration (Cloudinary/S3 optional)
+* Create, update, delete communities
+* Each community gets its own sub-modules and resources
+* Web chat for real-time discussion inside a community (WebSocket / WebRTC)
 
-Secure file access
+### ➕ Additional (Optional)
 
-🔔 Notifications
+* Analytics and reporting (progress, completion rates)
+* Role-based dashboards
+* REST + WebSocket endpoints for live features
 
-Email notifications for:
+---
 
-New course enrollment
+## 🛠️ Tech Stack
 
-Assignment deadlines
+| Component     | Technology                            |
+| ------------- | ------------------------------------- |
+| Backend       | Java 17, Spring Boot                  |
+| Security      | Spring Security, JWT                  |
+| Database      | MySQL or PostgreSQL                   |
+| ORM           | Hibernate, Spring Data JPA            |
+| Documentation | Swagger / OpenAPI, Postman            |
+| Build Tool    | Maven                                 |
+| Storage       | Local filesystem / Cloudinary / S3    |
+| Real-time     | WebSocket (Spring), STOMP / Socket.IO |
 
-Grades added
+---
 
-📊 Analytics (Optional)
+## 📁 Project Structure
 
-Student progress
-
-Course completion percentage
-
-Assignment statistics
-
-🛠️ Tech Stack
-Component	Technology
-Backend	Java 17, Spring Boot
-Security	Spring Security, JWT
-Database	MySQL / PostgreSQL
-ORM	Hibernate, Spring Data JPA
-Documentation	Swagger / Postman
-Build Tool	Maven
-Cloud Storage	Cloudinary / AWS S3 (Optional)
-📁 Project Structure
+```
 src/main/java/com/lms
-├── config
-├── controller
-├── dto
-├── entity
-├── exception
-├── repository
-├── security
-├── service
-└── util
+ ├── config         # Spring & app configuration
+ ├── controller     # REST controllers
+ ├── dto            # Request / Response DTOs
+ ├── entity         # JPA entities
+ ├── exception      # Custom exceptions & handlers
+ ├── repository     # Spring Data repositories
+ ├── security       # JWT filters, providers, config
+ ├── service        # Business logic
+ └── util           # Utility classes
+```
 
-⚙️ Setup Instructions
-1️⃣ Clone the Repository
-git clone https://github.com/yourusername/Learning-Management-System.git
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone
+
+```bash
+git clone https://github.com/Mahi12333/Learning-Management-System.git
 cd Learning-Management-System
+```
 
-2️⃣ Configure the Database
+### 2. Environment variables
 
-Update your application.properties or application.yml:
+Create a `.env` or set system environment variables used by `application.yml`:
 
+```properties
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/lms
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=your-password
+JWT_SECRET=your_jwt_secret_key_here
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name   # optional
+```
+
+### 3. application.yml (example)
+
+```yaml
 spring:
-datasource:
-url: jdbc:mysql://localhost:3306/lms
-username: root
-password: your-password
-jpa:
-hibernate:
-ddl-auto: update
-show-sql: true
-database-platform: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+```
 
-3️⃣ Run the Project
+> **Note:** `ddl-auto: update` is convenient for development only. Use migrations (Flyway / Liquibase) for production.
+
+### 4. Run (development)
+
+```bash
+mvn clean package
 mvn spring-boot:run
+```
 
-📌 API Documentation
+Application will start on `http://localhost:8080` by default.
 
-Swagger UI (if enabled):
+---
 
+## 📌 API Documentation
+
+If Swagger / OpenAPI is enabled:
+
+```
 http://localhost:8080/swagger-ui/index.html
+```
 
-📘 Endpoints Overview
-🔐 Auth
+---
 
-POST /api/auth/register
+## 📘 Endpoints Overview (examples)
 
-POST /api/auth/login
+### 🔐 Auth
 
-📚 Courses
+* `POST /api/auth/register` — Register a new user
+* `POST /api/auth/login` — Authenticate and receive JWT
 
-GET /api/courses
+### 📚 Courses
 
-POST /api/courses
+* `GET /api/courses` — List courses
+* `POST /api/courses` — Create a course (TEACHER/ADMIN)
+* `PUT /api/courses/{id}` — Update a course
+* `DELETE /api/courses/{id}` — Remove a course
 
-PUT /api/courses/{id}
+### 📝 Assignments
 
-DELETE /api/courses/{id}
+* `POST /api/assignments` — Create assignment
+* `GET /api/assignments/course/{courseId}` — Assignments for a course
 
-📝 Assignments
+### 📤 Submissions
 
-POST /api/assignments
+* `POST /api/submissions` — Submit assignment (multipart)
+* `GET /api/submissions/student/{studentId}` — Student submissions
 
-GET /api/assignments/course/{courseId}
+### 👥 Groups
 
-📤 Submissions
+* `POST /api/groups` — Create group
+* `PUT /api/groups/{id}` — Update group
+* `POST /api/groups/{id}/students` — Add students to group
 
-POST /api/submissions
+### 🌐 Communities
 
-GET /api/submissions/student/{studentId}
+* `POST /api/communities` — Create community
+* `GET /api/communities/{id}/chat` — Web chat endpoint (WebSocket)
 
-🧪 Testing
+> Expand endpoints with pagination, sorting, and filters as needed.
 
-Postman collection included (optional)
+---
 
-Unit tests with JUnit & Mockito
+## 🧪 Testing
 
-🤝 Contributing
+* Unit tests: JUnit 5 + Mockito
+* Integration tests: Spring Boot Test, Testcontainers (optional for DB)
+* Postman collection: `/docs/postman_collection.json` (optional)
 
-Pull requests are welcome!
-For major changes, please open an issue first to discuss what you would like to improve.
+---
 
-📄 License
+## ✅ Best Practices & Suggestions
 
-This project is licensed under the MIT License.
+* Use DTOs for all controller input/output.
+* Centralize exception handling with `@ControllerAdvice`.
+* Validate requests with `@Valid` and custom validators.
+* Use role-based method security (`@PreAuthorize`) for fine-grained access.
+* Externalize credentials (use Vault / secrets manager for prod).
+* Add API rate limiting on sensitive endpoints.
+* Use Flyway / Liquibase for schema migrations.
+* Add logging + request tracing (Spring Sleuth / OpenTelemetry).
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repo
+2. Create a feature branch
+3. Open a PR describing your changes
+
+Include tests and keep commits atomic.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see `LICENSE` file.
+
+---
+
+## 📞 Contact
+
+Maintainer — Your Name ([mahitoshgiri287.email@example.com](mailto:your.email@example.com))
+
+---
+
+*If you want, I can also:*
+
+* generate a Postman collection,
+* create an ER diagram and migration scripts,
+* scaffold controllers/services for the main modules,
+* or produce a production-ready `application.yml` + Docker Compose file.
+
+Tell me which of the above you want next.
