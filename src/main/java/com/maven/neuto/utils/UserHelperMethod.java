@@ -77,7 +77,6 @@ public class UserHelperMethod {
                     .imagesPath(course.getImagesPath())
                     .createdAt(LocalDateTime.ofInstant(course.getCreatedAt(), ZoneOffset.UTC))
                     .updatedAt(LocalDateTime.ofInstant(course.getUpdatedAt(), ZoneOffset.UTC))
-                    .slug(course.getSlug())
                     .totalModules(course.getModules().size())
                     .totalVideoDuration(totalDuration)
                     .totalLessons(totalLessons)
@@ -124,7 +123,6 @@ public class UserHelperMethod {
                     .archive(course.getArchive())
                     .totalModules(course.getModules().size())
                     .totalVideoDuration(totalDuration)
-                    .slug(course.getSlug())
                     .build();
         }).collect(Collectors.toList());
     }

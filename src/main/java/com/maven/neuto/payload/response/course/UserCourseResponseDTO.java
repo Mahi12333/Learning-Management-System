@@ -19,7 +19,6 @@ public class UserCourseResponseDTO {
     private String type;
     private String imagesPath;
     private boolean archive;
-    private String slug;
     private int totalModules;
     private Long totalVideoDuration;
     private int totalLessons;
