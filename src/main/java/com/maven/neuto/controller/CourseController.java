@@ -1,6 +1,10 @@
 package com.maven.neuto.controller;
 
+import com.maven.neuto.config.MessageConfig;
 import com.maven.neuto.payload.request.course.*;
+import com.maven.neuto.payload.response.PaginatedResponse;
+import com.maven.neuto.payload.response.course.CourseResponseDTO;
+import com.maven.neuto.payload.response.course.PublicCourseResponseDTO;
 import com.maven.neuto.service.CourseService;
 import com.maven.neuto.utils.AppConstants;
 import jakarta.validation.Valid;
@@ -10,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Locale;
+
 
 @Slf4j
 @RestController
@@ -17,24 +23,38 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CourseController {
     private final CourseService courseService;
+    private final MessageConfig messageConfig;
 
     @PostMapping("/create-course")
-    public ResponseEntity<?>createCourse(@Valid @RequestBody CourseCreateDTO request){
+    public ResponseEntity<?>createCourse(@Valid @RequestBody CourseCreateDTO request, Locale locale){
         String response = courseService.createCourse(request);
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+        String localizedMessage = messageConfig.getMessage(response, null, locale);
+        return new ResponseEntity<>(localizedMessage,HttpStatus.CREATED);
     }
+
     @PostMapping("/update-course")
-    public ResponseEntity<?>updateCourse(@Valid @RequestBody UpdateCourseDTO request){
-        String response = courseService.updateCourse(request);
-        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    public ResponseEntity<?>updateCourse(@Valid @RequestBody UpdateCourseDTO request, Locale locale){
+        CourseResponseDTO response = courseService.updateCourse(request);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
-  /*  @GetMapping("/public-course")
-    public ResponseEntity<?>PublicCourse(){
-        String response = courseService.publicCourse(request);
+
+    @GetMapping("/public-course")
+    public ResponseEntity<PaginatedResponse<PublicCourseResponseDTO>>PublicCourse(@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                                                                  @RequestParam(name = "pageSize", defaultValue = AppConstants.LIMIT, required = false) Integer pageSize,
+                                                                                  @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
+        PaginatedResponse<PublicCourseResponseDTO> response = courseService.publicCourse(pageNumber, pageSize, sortOrder);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
-    @GetMapping("/student-ongoing-course")
+    @GetMapping("/public-recommended-course")
+    public ResponseEntity<PaginatedResponse<PublicCourseResponseDTO>>PublicRecommendedCourse(@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                                                                  @RequestParam(name = "pageSize", defaultValue = AppConstants.LIMIT, required = false) Integer pageSize,
+                                                                                  @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
+        PaginatedResponse<PublicCourseResponseDTO> response = courseService.PublicRecommendedCourse(pageNumber, pageSize, sortOrder);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
+    /*@GetMapping("/student-ongoing-course")
     public ResponseEntity<?>StudentOngoingCourse(@Valid @RequestBody  ){
     }
 

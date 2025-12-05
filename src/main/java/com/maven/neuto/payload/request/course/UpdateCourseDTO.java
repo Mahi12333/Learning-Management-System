@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @CustomeValidetion
 public class UpdateCourseDTO {
+    private Long id;
     private String name;
     private String description;
     private String about;

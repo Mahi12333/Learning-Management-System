@@ -1,6 +1,7 @@
 package com.maven.neuto.model;
 
 
+import com.maven.neuto.config.StringListConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,10 +19,8 @@ import java.util.List;
 @Table(name = "tbl_course",
          uniqueConstraints = {
               @UniqueConstraint(columnNames = "name"),
-              @UniqueConstraint(columnNames = "slug")
          },
             indexes = {
-                @Index(name = "idx_course_slug", columnList = "slug"),
                 @Index(name = "idx_course_name", columnList = "name")
             }
     )
@@ -50,15 +49,13 @@ public class Course extends BaseEntity{
     @Column(name = "images_path")
     private String imagesPath;
 
+    @Convert(converter = StringListConverter.class)
     @Column(name = "tags", columnDefinition = "TEXT")
-    private String tags = "[]";
+    private List<String> tags = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community courseCommunity;
-
-    @Column(name = "slug")
-    private String slug;
 
     @Column(name = "archive")
     private Boolean archive = false; // true = archived, false = not archived
