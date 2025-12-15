@@ -1,6 +1,6 @@
 # 📚 Learning Management System (LMS)
 
-A complete **Learning Management System** built with **Java 17 & Spring Boot**, designed to manage courses, users (students / teachers), groups, communities, assignments, submissions, and content. This project demonstrates clean architecture, modular design, role-based access control, JWT authentication, and production-ready backend practices.
+A complete **Learning Management System** built with **Java 21 & Spring Boot**, designed to manage courses, users (students / teachers), groups, communities, assignments, submissions, and content. This project demonstrates clean architecture, modular design, role-based access control, JWT authentication, and production-ready backend practices.
 
 ---
 ## 🧩 Modules & Responsibilities
