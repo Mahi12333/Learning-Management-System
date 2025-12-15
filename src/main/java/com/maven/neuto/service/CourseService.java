@@ -12,7 +12,7 @@ public interface CourseService {
     String createCourse(CourseCreateDTO request);
     CourseResponseDTO updateCourse(UpdateCourseDTO request);
 
-    PaginatedResponse<PublicCourseResponseDTO> publicCourse(Integer pageNumber, Integer pageSize, String sortOrder);
+    PaginatedResponse<PublicCourseResponseDTO> publicCourse(Integer pageNumber, Integer pageSize, String sortOrder, String sortBy);
 
-    PaginatedResponse<PublicCourseResponseDTO> PublicRecommendedCourse(Integer pageNumber, Integer pageSize, String sortOrder);
+    PaginatedResponse<PublicCourseResponseDTO> PublicRecommendedCourse(Integer pageNumber, Integer pageSize, String sortOrder, String sortBy);
 }

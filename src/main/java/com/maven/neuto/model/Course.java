@@ -37,7 +37,6 @@ public class Course extends BaseEntity{
     @Column(name = "name")
     private String name;
 
-    @Lob
     @Column(name = "about", columnDefinition = "TEXT")
     private String about;
 

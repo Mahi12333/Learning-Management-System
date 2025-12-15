@@ -1,10 +1,12 @@
 package com.maven.neuto.serviceImplement;
 
+import com.maven.neuto.exception.APIException;
 import com.maven.neuto.exception.ResourceNotFoundException;
 import com.maven.neuto.mapstruct.CourseMapper;
 import com.maven.neuto.mapstruct.MapperContext;
 import com.maven.neuto.model.Course;
 import com.maven.neuto.model.Group;
+import com.maven.neuto.model.User;
 import com.maven.neuto.payload.request.course.CourseCreateDTO;
 import com.maven.neuto.payload.request.course.UpdateCourseDTO;
 import com.maven.neuto.payload.response.PaginatedResponse;
@@ -24,11 +26,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -45,6 +50,14 @@ public class CourseServiceImpl implements CourseService {
     public String createCourse(CourseCreateDTO request) {
         Long currentUserId = authUtil.loggedInUserIdForTesting();
         Long communityId = authUtil.communityId();
+        Course existingCourse = courseRepository.findAll().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(request.getName())
+                        && c.getCourseCommunity().getId().equals(communityId))
+                .findFirst()
+                .orElse(null);
+        if (existingCourse != null) {
+            throw new APIException("course.already.exists", HttpStatus.BAD_REQUEST);
+        }
         Course course = courseMapper.toEntityCreateCourse(request, currentUserId, communityId, mapperContext);
         courseRepository.save(course);
         return "course.created.successfully";
@@ -57,6 +70,15 @@ public class CourseServiceImpl implements CourseService {
         if(Boolean.TRUE.equals(request.getOnlyFetch())){
             return courseMapper.toResponseDto(existingCourse);
         }
+        Course courseWithSameName = courseRepository.findAll().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(request.getName())
+                        && c.getCourseCommunity().getId().equals(existingCourse.getCourseCommunity().getId())
+                        && !c.getId().equals(courseId))
+                .findFirst()
+                .orElse(null);
+        if (courseWithSameName != null) {
+            throw new APIException("course.name.already.exists", HttpStatus.BAD_REQUEST);
+        }
         courseMapper.updateCourseFromDto(request, existingCourse);
         if (request.getTags() != null) {
             existingCourse.setTags(request.getTags());
@@ -66,15 +88,22 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public PaginatedResponse<PublicCourseResponseDTO> publicCourse(Integer pageNumber, Integer pageSize, String sortOrder) {
+    public PaginatedResponse<PublicCourseResponseDTO> publicCourse(Integer pageNumber, Integer pageSize, String sortOrder, String sortBy) {
         Long communityId = authUtil.communityId();
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortOrder).descending());
+        Sort sortByOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        log.info("sortByOrder: {}", sortByOrder);
+        int page = Math.max(pageNumber - 1, 0);
+        Pageable pageable = PageRequest.of(page, pageSize, sortByOrder);
 
         // step 1: Fetch page from DB
-        Page<CourseProjection> page = courseRepository.findAllPublicCourses(communityId, pageable);
+        Page<CourseProjection> pageResult = courseRepository.findAllPublicCourses(communityId, pageable);
+        log.info("page content size: {}", pageResult.getContent().size());
+        log.info("page content: {}", pageResult);
 
         // step 2: Convert items if needed (optional here because repository already returns DTO)
-        List<PublicCourseResponseDTO> dtoList = page.getContent().stream()
+        List<PublicCourseResponseDTO> dtoList = pageResult.getContent().stream()
                 .map(p -> new PublicCourseResponseDTO(
                         p.getId(),                                     // Long id
                         p.getName(),                                   // String name
@@ -86,33 +115,136 @@ public class CourseServiceImpl implements CourseService {
                                 .map(String::trim)
                                 .filter(tag -> !tag.isEmpty())
                                 .toList(),                // List<String> tags
-                        p.getImagesPath(),                             // String imagesPath
-                        false,                                        // boolean archive (default false)
+                        p.getImagesPath(),
+                        p.getArchive(),                                        // boolean archive (default false)
                         p.getName() + "_" + p.getId(),                // String slug
-                        p.getTotalModules() != null ? p.getTotalModules() : 0, // int totalModules
+                        p.getTotalModules() != null ? p.getTotalModules() : 0L, // int totalModules
                         p.getTotalDuration() != null ? p.getTotalDuration() : 0L, // Long totalVideoDuration
-                        p.getTotalLessons() != null ? p.getTotalLessons() : 0,   // int totalLessons
-                        null,                                         // Long size
+                        p.getTotalLessons() != null ? p.getTotalLessons() : 0L,   // int totalLessons
+                        p.getSize(),                                         // Long size
                         0,                                            // int completedLessons
                         0.0,                                          // double progressPercentage
                         p.getCreatedAt(),                             // LocalDateTime createdAt
-                        null                                          // LocalDateTime updatedAt
+                        p.getUpdatedAt()
                 ))
                 .toList();
 
         // step 3: Build and return paginated response
         return PaginatedResponse.<PublicCourseResponseDTO>builder()
                 .content(dtoList)
-                .pageNumber(page.getNumber())
-                .pageSize(page.getSize())
-                .totalElements(page.getTotalElements())
-                .totalPages(page.getTotalPages())
+                .pageNumber(pageResult.getNumber())
+                .pageSize(pageResult.getSize())
+                .totalElements(pageResult.getTotalElements())
+                .totalPages(pageResult.getTotalPages())
                 .build();
     }
 
     @Override
-    public PaginatedResponse<PublicCourseResponseDTO> PublicRecommendedCourse(Integer pageNumber, Integer pageSize, String sortOrder) {
+    public PaginatedResponse<PublicCourseResponseDTO> PublicRecommendedCourse(Integer pageNumber,
+                                                                              Integer pageSize,
+                                                                              String sortOrder, String sortBy) {
+        /*Long currentUserId = authUtil.loggedInUserIdForTesting();
+        Long communityId = authUtil.communityId();
 
+        // 1\) load user and get interests as List\<String\>
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not.found"));
+
+        List<String> interests = user.getInterest(); // e.g. ["java","sql"]
+        if (interests == null || interests.isEmpty()) {
+            return PaginatedResponse.<PublicCourseResponseDTO>builder()
+                    .content(Collections.emptyList())
+                    .pageNumber(pageNumber)
+                    .pageSize(pageSize)
+                    .totalElements(0)
+                    .totalPages(0)
+                    .build();
+        }
+
+        // 2\) normalize interests to lower\-case set
+        List<String> normalizedInterests = interests.stream()
+                .filter(i -> i != null && !i.trim().isEmpty())
+                .map(String::trim)
+                .map(String::toLowerCase)
+                .toList();
+
+        if (normalizedInterests.isEmpty()) {
+            return PaginatedResponse.<PublicCourseResponseDTO>builder()
+                    .content(Collections.emptyList())
+                    .pageNumber(pageNumber)
+                    .pageSize(pageSize)
+                    .totalElements(0)
+                    .totalPages(0)
+                    .build();
+        }
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortOrder).descending());
+        // step 1: Fetch page from DB
+        Page<CourseProjection> page = courseRepository.findAllPublicCourses(communityId, pageable);
+
+        // 4) filter courses whose tags overlap with interests
+        List<CourseProjection> matchedCourses = page.stream()
+                .filter(p -> {
+                    String tagsStr = p.getTags(); // e.g. "Javascript, sql"
+                    if (tagsStr == null || tagsStr.trim().isEmpty()) {
+                        return false;
+                    }
+                    List<String> courseTags = Arrays.stream(tagsStr.split(","))
+                            .map(String::trim)
+                            .filter(t -> !t.isEmpty())
+                            .map(String::toLowerCase)
+                            .toList();
+
+                    // any overlap between interests and courseTags
+                    return courseTags.stream().anyMatch(normalizedInterests::contains);
+                })
+                .toList();
+
+        // 5\) manual pagination on matchedCourses
+        int totalElements = matchedCourses.size();
+        int fromIndex = Math.min(pageNumber * pageSize, totalElements);
+        int toIndex = Math.min(fromIndex + pageSize, totalElements);
+
+        List<CourseProjection> pageSlice = matchedCourses.subList(fromIndex, toIndex);
+
+        // 6\) map to DTOs
+        List<PublicCourseResponseDTO> dtoList = pageSlice.stream()
+                .map(p -> new PublicCourseResponseDTO(
+                        p.getId(),
+                        p.getName(),
+                        p.getDescription(),
+                        p.getAbout(),
+                        (p.getTags() == null || p.getTags().trim().isEmpty())
+                                ? Collections.emptyList()
+                                : Arrays.stream(p.getTags().split(","))
+                                .map(String::trim)
+                                .filter(tag -> !tag.isEmpty())
+                                .toList(),
+                        p.getImagesPath(),
+                        false,
+                        p.getName() + "_" + p.getId(),
+                        p.getTotalModules() != null ? p.getTotalModules() : 0,
+                        p.getTotalDuration() != null ? p.getTotalDuration() : 0L,
+                        p.getTotalLessons() != null ? p.getTotalLessons() : 0,
+                        null,
+                        0,
+                        0.0,
+                        p.getCreatedAt(),
+                        null
+                ))
+                .toList();
+
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        return PaginatedResponse.<PublicCourseResponseDTO>builder()
+                .content(dtoList)
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .totalElements(totalElements)
+                .totalPages(totalPages)
+                .build();*/
         return null;
     }
+
+
 }

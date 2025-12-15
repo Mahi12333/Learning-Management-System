@@ -41,16 +41,18 @@ public class CourseController {
     @GetMapping("/public-course")
     public ResponseEntity<PaginatedResponse<PublicCourseResponseDTO>>PublicCourse(@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
                                                                                   @RequestParam(name = "pageSize", defaultValue = AppConstants.LIMIT, required = false) Integer pageSize,
-                                                                                  @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
-        PaginatedResponse<PublicCourseResponseDTO> response = courseService.publicCourse(pageNumber, pageSize, sortOrder);
+                                                                                  @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder,
+                                                                                  @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy){
+        PaginatedResponse<PublicCourseResponseDTO> response = courseService.publicCourse(pageNumber, pageSize, sortOrder, sortBy);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @GetMapping("/public-recommended-course")
     public ResponseEntity<PaginatedResponse<PublicCourseResponseDTO>>PublicRecommendedCourse(@RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
                                                                                   @RequestParam(name = "pageSize", defaultValue = AppConstants.LIMIT, required = false) Integer pageSize,
-                                                                                  @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
-        PaginatedResponse<PublicCourseResponseDTO> response = courseService.PublicRecommendedCourse(pageNumber, pageSize, sortOrder);
+                                                                                  @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder,
+                                                                                             @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy){
+        PaginatedResponse<PublicCourseResponseDTO> response = courseService.PublicRecommendedCourse(pageNumber, pageSize, sortOrder, sortBy);
         return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 

@@ -13,7 +13,7 @@ public interface CourseMapper {
 
     @Mapping(target = "courseCreator.id", source = "CreatedById")
     @Mapping(target = "courseCommunity.id", source = "communityId")
-    @Mapping(target = "imagesPath", source = "path")
+    @Mapping(target = "imagesPath", source = "request.path")
     Course toEntityCreateCourse(CourseCreateDTO request, Long CreatedById, Long communityId,  @Context MapperContext courseContext);
 
     // Entity → Response DTO (for returning )

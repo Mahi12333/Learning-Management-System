@@ -3,60 +3,125 @@
 A complete **Learning Management System** built with **Java 17 & Spring Boot**, designed to manage courses, users (students / teachers), groups, communities, assignments, submissions, and content. This project demonstrates clean architecture, modular design, role-based access control, JWT authentication, and production-ready backend practices.
 
 ---
+## 🧩 Modules & Responsibilities
 
-## 🚀 Features
+### 1️⃣ User Management Module
 
-### 👩‍🏫 User Management
+**Purpose:** Manage users and their roles.
 
-* Student & Teacher registration / login
-* Role-based access (ADMIN / TEACHER / STUDENT)
-* Secure authentication using JWT + Spring Security
+**Responsibilities:**
 
-### 📘 Course Management
+* Register and authenticate users (Student, Teacher, Admin)
+* Issue and validate JWT tokens
+* Enforce role-based access control on APIs
+* Manage user profiles and basic account data
 
-* Create, update, delete courses
-* Assign instructors to courses
-* Student enrollment to courses
-* Course categories and tags
+---
 
-### 📝 Assignments & Submissions
+### 2️⃣ Course Management Module
 
-* Instructors create assignments and deadlines
-* Students submit assignments (file/text)
-* Submission tracking and versioning
-* Grade management and feedback
+**Purpose:** Handle the lifecycle of courses.
 
-### 🗂 Content Management
+**Responsibilities:**
 
-* Upload videos, documents, notes
-* Optional cloud integration (Cloudinary or AWS S3)
-* Secure file access and signed URLs
+* Create, update, and delete courses
+* Assign instructors/teachers to courses
+* Enroll students into courses
+* Manage course categories, tags, and metadata
+* Expose paginated and sortable course listings
 
-### 🔔 Notifications
+---
 
-* Email notifications for:
+### 3️⃣ Assignment & Submission Module
 
-    * New course enrollment
-    * Assignment deadlines / reminders
-    * Grades published
+**Purpose:** Support teaching and evaluation workflow.
 
-### 👥 Group Management
+**Responsibilities:**
 
-* Create, update, delete groups
+* Allow teachers to create assignments with deadlines and instructions
+* Allow students to submit assignments (file or text)
+* Track submission history and versions
+* Record grades and feedback for each submission
+* Provide assignment listings by course or student
+
+---
+
+### 4️⃣ Content Management Module
+
+**Purpose:** Store and serve learning materials.
+
+**Responsibilities:**
+
+* Upload and manage course resources (videos, documents, notes, etc.)
+* Store files locally or in cloud storage (Cloudinary / S3, if configured)
+* Provide secure and controlled file download / access
+* Optionally generate signed URLs for protected content
+
+---
+
+### 5️⃣ Notification Module
+
+**Purpose:** Notify users about important events.
+
+**Responsibilities:**
+
+* Send email notifications for:
+  * New course enrollment
+  * Upcoming or overdue assignment deadlines
+  * Grades or feedback published
+* Provide a pluggable notification mechanism for future channels
+
+---
+
+### 6️⃣ Group Management Module
+
+**Purpose:** Organize students into groups for collaboration or administration.
+
+**Responsibilities:**
+
+* Create, update, and delete groups
 * Assign students to groups
-* Group-level resources and activities
+* Associate group-specific resources or activities
+* Support group-based visibility or access rules where needed
 
-### 🌐 Community Management
+---
 
-* Create, update, delete communities
-* Each community gets its own sub-modules and resources
-* Web chat for real-time discussion inside a community (WebSocket / WebRTC)
+### 7️⃣ Community Management & Chat Module
 
-### ➕ Additional (Optional)
+**Purpose:** Provide community spaces around topics or institutions.
 
-* Analytics and reporting (progress, completion rates)
-* Role-based dashboards
-* REST + WebSocket endpoints for live features
+**Responsibilities:**
+
+* Create, update, and delete communities
+* Attach courses, groups, and content to each community
+* Provide a real-time web chat endpoint (WebSocket) for each community
+
+---
+
+### 8️⃣ Security & Authentication Module
+
+**Purpose:** Protect the API and data.
+
+**Responsibilities:**
+
+* JWT-based authentication (login, token validation)
+* Spring Security configuration (filters, authentication providers)
+* Method-level authorization using annotations (e.g. \`@PreAuthorize\`)
+* Password encoding and secure credential handling
+
+---
+
+### 9️⃣ Persistence & Data Access Layer
+
+**Purpose:** Interact with the database in a clean, abstracted way.
+
+**Responsibilities:**
+
+* Use Spring Data JPA repositories for entities like User, Course, Assignment, Submission, Group, Community, etc.
+* Define query methods with pagination and sorting support
+* Encapsulate ORM logic and mapping between entities and DTOs
+* Support projections for optimized read queries
+
 
 ---
 
@@ -64,11 +129,11 @@ A complete **Learning Management System** built with **Java 17 & Spring Boot**, 
 
 | Component     | Technology                            |
 | ------------- |---------------------------------------|
-| Backend       | Java 21, Spring Boot                   |
+| Backend       | Java 21, Spring Boot                  |
 | Security      | Spring Security, JWT                  |
 | Database      | MySQL or PostgreSQL                   |
 | ORM           | Hibernate, Spring Data JPA            |
-| Documentation | Swagger / OpenAPI, Postman            |
+| Documentation | Swagger / OpenAPI, Insomnia           |
 | Build Tool    | Maven                                 |
 | Storage       | Local filesystem / Cloudinary / S3    |
 | Real-time     | WebSocket (Spring), STOMP / Socket.IO |
@@ -77,18 +142,48 @@ A complete **Learning Management System** built with **Java 17 & Spring Boot**, 
 
 ## 📁 Project Structure
 
-```
-src/main/java/com/lms
- ├── config         # Spring & app configuration
- ├── controller     # REST controllers
- ├── dto            # Request / Response DTOs
- ├── entity         # JPA entities
- ├── exception      # Custom exceptions & handlers
- ├── repository     # Spring Data repositories
- ├── security       # JWT filters, providers, config
- ├── service        # Business logic
- └── util           # Utility classes
-```
+LearningManagementSystem
+│
+├── .idea
+├── .mvn
+├── logstash
+│
+├── src
+│   └── main
+│       ├── java
+│       │   └── com
+│       │       └── maven
+│       │           └── neuto
+│       │               ├── annotation
+│       │               ├── aspect
+│       │               ├── config
+│       │               ├── controller
+│       │               ├── enum
+│       │               ├── exception
+│       │               ├── mapstruct
+│       │               ├── model
+│       │               ├── payload
+│       │               ├── repository
+│       │               ├── security
+│       │               ├── service
+│       │               ├── serviceImplement
+│       │               ├── utils
+│       │               └── NeuApplication.java
+│       │
+│       └── resources
+│           ├── static
+│           ├── templates
+│           │   └── email
+│           ├── application.yml
+│           ├── application-dev.yml
+│           ├── application-prod.yml
+│           ├── logback-spring.xml
+│           └── messages
+│               ├── messages_en.properties
+│               └── messages_bn.properties
+│
+└── pom.xml
+
 
 ---
 
@@ -237,11 +332,3 @@ Maintainer — Mahitosh Giri Name ([mahitoshgiri287.email@example.com](mailto:yo
 
 ---
 
-*If you want, I can also:*
-
-* generate a Postman collection,
-* create an ER diagram and migration scripts,
-* scaffold controllers/services for the main modules,
-* or produce a production-ready `application.yml` + Docker Compose file.
-
-Tell me which of the above you want next.

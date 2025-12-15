@@ -87,6 +87,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/course/public-course").authenticated()
                 .requestMatchers("/api/v1/course/ongoing-course").hasAnyAuthority("STUDENT")
                 .requestMatchers("/api/v1/course/recommend-course").hasAnyAuthority("STUDENT")
+                .requestMatchers("/api/v1/course/**").permitAll()
                 //! Group Part---
                 .requestMatchers("/api/v1/group/create-group").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and  Teacher
                 .requestMatchers("/api/v1/group/updated-group").hasAnyAuthority("ADMIN", "TEACHER") // can do only admin and owner of course

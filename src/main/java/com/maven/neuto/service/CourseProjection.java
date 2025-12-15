@@ -9,8 +9,11 @@ public interface CourseProjection {
     String getAbout();
     String getTags();
     String getImagesPath();
+    Long getSize();
+    Boolean getArchive();
     LocalDateTime getCreatedAt();
-    Integer getTotalModules();
-    Integer getTotalLessons();
+    LocalDateTime getUpdatedAt();
+    Long getTotalModules();
+    Long getTotalLessons();
     Long getTotalDuration();
 }
