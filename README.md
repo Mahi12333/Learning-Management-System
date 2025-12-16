@@ -141,7 +141,7 @@ A complete **Learning Management System** built with **Java 21 & Spring Boot**, 
 ---
 
 ## 📁 Project Structure
-
+``
 LearningManagementSystem
 │
 ├── .idea
@@ -183,7 +183,7 @@ LearningManagementSystem
 │               └── messages_bn.properties
 │
 └── pom.xml
-
+``
 
 ---
 
