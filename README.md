@@ -141,13 +141,11 @@ A complete **Learning Management System** built with **Java 21 & Spring Boot**, 
 ---
 
 ## 📁 Project Structure
-``
+
 LearningManagementSystem
-│
 ├── .idea
 ├── .mvn
 ├── logstash
-│
 ├── src
 │   └── main
 │       ├── java
@@ -169,7 +167,6 @@ LearningManagementSystem
 │       │               ├── serviceImplement
 │       │               ├── utils
 │       │               └── NeuApplication.java
-│       │
 │       └── resources
 │           ├── static
 │           ├── templates
@@ -181,9 +178,9 @@ LearningManagementSystem
 │           └── messages
 │               ├── messages_en.properties
 │               └── messages_bn.properties
-│
 └── pom.xml
-``
+
+
 
 ---
 

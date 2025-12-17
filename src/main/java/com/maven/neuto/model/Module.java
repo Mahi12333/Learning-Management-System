@@ -14,20 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "tbl_module",
-indexes = {
-        @Index(name = "idx_module_slug", columnList = "slug")
-},
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "name")
-        }
-)
+@Table(name = "tbl_module")
 public class Module extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "slug")

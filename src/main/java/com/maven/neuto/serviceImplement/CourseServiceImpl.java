@@ -5,17 +5,16 @@ import com.maven.neuto.exception.ResourceNotFoundException;
 import com.maven.neuto.mapstruct.CourseMapper;
 import com.maven.neuto.mapstruct.MapperContext;
 import com.maven.neuto.model.Course;
-import com.maven.neuto.model.Group;
+import com.maven.neuto.model.Lesson;
 import com.maven.neuto.model.User;
-import com.maven.neuto.payload.request.course.CourseCreateDTO;
-import com.maven.neuto.payload.request.course.UpdateCourseDTO;
+import com.maven.neuto.model.Module;
+import com.maven.neuto.payload.request.course.*;
 import com.maven.neuto.payload.response.PaginatedResponse;
 import com.maven.neuto.payload.response.course.CourseResponseDTO;
 import com.maven.neuto.payload.response.course.PublicCourseResponseDTO;
-import com.maven.neuto.payload.response.course.UserCourseResponseDTO;
-import com.maven.neuto.payload.response.group.CommentResponseDTO;
 import com.maven.neuto.repository.CourseRepository;
 import com.maven.neuto.repository.LessonRepository;
+import com.maven.neuto.repository.ModuleRepository;
 import com.maven.neuto.repository.UserRepository;
 import com.maven.neuto.service.CourseProjection;
 import com.maven.neuto.service.CourseService;
@@ -26,14 +25,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,6 +43,7 @@ public class CourseServiceImpl implements CourseService {
     private final LessonRepository lessonRepository;
     private final CourseMapper courseMapper;
     private final MapperContext mapperContext;
+    private final ModuleRepository moduleRepository;
 
     @Override
     public String createCourse(CourseCreateDTO request) {
@@ -93,7 +92,6 @@ public class CourseServiceImpl implements CourseService {
         Sort sortByOrder = sortOrder.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
-        log.info("sortByOrder: {}", sortByOrder);
         int page = Math.max(pageNumber - 1, 0);
         Pageable pageable = PageRequest.of(page, pageSize, sortByOrder);
 
@@ -143,7 +141,7 @@ public class CourseServiceImpl implements CourseService {
     public PaginatedResponse<PublicCourseResponseDTO> PublicRecommendedCourse(Integer pageNumber,
                                                                               Integer pageSize,
                                                                               String sortOrder, String sortBy) {
-        /*Long currentUserId = authUtil.loggedInUserIdForTesting();
+        Long currentUserId = authUtil.loggedInUserIdForTesting();
         Long communityId = authUtil.communityId();
 
         // 1\) load user and get interests as List\<String\>
@@ -167,7 +165,7 @@ public class CourseServiceImpl implements CourseService {
                 .map(String::trim)
                 .map(String::toLowerCase)
                 .toList();
-
+        log.info("normalized interests: {}", normalizedInterests);
         if (normalizedInterests.isEmpty()) {
             return PaginatedResponse.<PublicCourseResponseDTO>builder()
                     .content(Collections.emptyList())
@@ -177,13 +175,15 @@ public class CourseServiceImpl implements CourseService {
                     .totalPages(0)
                     .build();
         }
-
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortOrder).descending());
+        Sort sortByOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        int page = Math.max(pageNumber - 1, 0);
+        Pageable pageable = PageRequest.of(page, pageSize, sortByOrder);
         // step 1: Fetch page from DB
-        Page<CourseProjection> page = courseRepository.findAllPublicCourses(communityId, pageable);
-
+        Page<CourseProjection> pageResult = courseRepository.findAllPublicCourses(communityId, pageable);
         // 4) filter courses whose tags overlap with interests
-        List<CourseProjection> matchedCourses = page.stream()
+        List<CourseProjection> matchedCourses = pageResult.stream()
                 .filter(p -> {
                     String tagsStr = p.getTags(); // e.g. "Javascript, sql"
                     if (tagsStr == null || tagsStr.trim().isEmpty()) {
@@ -200,15 +200,9 @@ public class CourseServiceImpl implements CourseService {
                 })
                 .toList();
 
-        // 5\) manual pagination on matchedCourses
         int totalElements = matchedCourses.size();
-        int fromIndex = Math.min(pageNumber * pageSize, totalElements);
-        int toIndex = Math.min(fromIndex + pageSize, totalElements);
 
-        List<CourseProjection> pageSlice = matchedCourses.subList(fromIndex, toIndex);
-
-        // 6\) map to DTOs
-        List<PublicCourseResponseDTO> dtoList = pageSlice.stream()
+        List<PublicCourseResponseDTO> dtoList = matchedCourses.stream()
                 .map(p -> new PublicCourseResponseDTO(
                         p.getId(),
                         p.getName(),
@@ -242,8 +236,80 @@ public class CourseServiceImpl implements CourseService {
                 .pageSize(pageSize)
                 .totalElements(totalElements)
                 .totalPages(totalPages)
-                .build();*/
-        return null;
+                .build();
+    }
+    @Override
+    public String createModule(ModuleCreateDTO request) {
+        Course course = courseRepository.findById(request.getCourseId())
+                .orElseThrow(() -> new ResourceNotFoundException("course.not.found"));
+        boolean moduleExists = moduleRepository.existsByNameIgnoreCaseAndCourseId(
+                        request.getName(),
+                        course.getId()
+                );
+
+        if (moduleExists) {
+            throw new APIException("module.already.exists", HttpStatus.BAD_REQUEST);
+        }
+
+        Module modules = courseMapper.toEntityCreateModule(request, mapperContext);
+        moduleRepository.save(modules);
+
+        return "module.created.successfully";
+    }
+
+    @Override
+    public String updateModule(ModuleUpdateDTO request) {
+        Long moduleId = request.getModuleId();
+        Module existingModule = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResourceNotFoundException("module.not.found"));
+
+        Long courseId = request.getCourseId();
+        boolean exists = courseRepository.existsById(courseId);
+        if (!exists) {
+            throw new APIException("course.not.found", HttpStatus.BAD_REQUEST);
+        }
+        boolean moduleWithSameNameExists =
+                moduleRepository.existsByNameIgnoreCaseAndCourseIdAndIdNot(
+                        request.getName(),
+                        courseId,
+                        moduleId
+                );
+        if (moduleWithSameNameExists) {
+            throw new APIException("module.name.already.exists", HttpStatus.BAD_REQUEST);
+        }
+
+        Module updateModule = courseMapper.updateModuleFromDto(request, existingModule);
+        moduleRepository.save(updateModule);
+        return "module.updated.successfully";
+    }
+
+    @Override
+    public String createLesson(LessonCreateDTO request) {
+        Long currentUserId = authUtil.loggedInUserIdForTesting();
+        Module ModuleExists = moduleRepository.findById(request.getModuleId()).orElseThrow(() -> new ResourceNotFoundException("module.not.found"));
+        if (ModuleExists == null) {
+            throw new APIException("module.not.found", HttpStatus.BAD_REQUEST);
+        }
+        Long courseId = ModuleExists.getCourse().getId();
+        Lesson lesson = courseMapper.toEntityCreateLesson(request, currentUserId, courseId, mapperContext);
+        lessonRepository.save(lesson);
+        return "lesson.created.successfully";
+    }
+
+    @Override
+    public String updateLesson(LessonUpdateDTO request) {
+        Long currentUserId = authUtil.loggedInUserIdForTesting();
+        // id will be split from lessonSlug ex-- lesson name = "introduction-to-java_15" , id=15
+        Long lessonId = Long.parseLong(request.getLessonSlug().substring(request.getLessonSlug().lastIndexOf("_") + 1));
+        Optional<Lesson> LessonExists = lessonRepository.findById(lessonId);
+        if (LessonExists == null) {
+            throw new APIException("lesson.not.found", HttpStatus.BAD_REQUEST);
+        }
+        Long moduleId = LessonExists.get().getModule().getId();
+        Long courseId = LessonExists.get().getCourse().getId();
+        Lesson lesson = courseMapper.toEntityUpdateLesson(request, currentUserId, moduleId, courseId, mapperContext);
+        lessonRepository.save(lesson);
+        return "lesson.updated.successfully";
     }
 
 

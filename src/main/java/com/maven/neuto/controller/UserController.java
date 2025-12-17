@@ -123,7 +123,7 @@ public class UserController {
                                                      @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
                                                      @RequestParam(name = "pageSize", defaultValue = AppConstants.LIMIT, required = false) Integer pageSize,
                                                      @RequestParam(name = "sortOrder", defaultValue = AppConstants.SORT_DIR, required = false) String sortOrder){
-        //TODO
+
         ActivePendingUserDTO response = userService.PendingActiveSuperAdmin(type, pageNumber, pageSize, sortOrder);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
