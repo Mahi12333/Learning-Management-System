@@ -11,4 +11,5 @@ import lombok.Setter;
 public class ModuleCreateDTO {
     private String name;
     private Boolean archive;
+    private Long courseId;
 }

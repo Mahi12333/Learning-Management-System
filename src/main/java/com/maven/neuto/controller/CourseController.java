@@ -84,31 +84,39 @@ public class CourseController {
 
     @GetMapping("/project-actives")
     public ResponseEntity<?> ProjectActives(@Valid @RequestParam("slug") String slug, @RequestParam("search") String search, @RequestParam("location") String location){
-    }
+    }*/
 
     @PostMapping("/create-module")
-    public ResponseEntity<?>createModule(@Valid ){
+    public ResponseEntity<?>createModule(@Valid @RequestBody ModuleCreateDTO request){
+        String response = courseService.createModule(request);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
     }
 
     @PatchMapping("/update-module")
-    public ResponseEntity<?>updateModule(@Valid ){
+    public ResponseEntity<?>updateModule(@Valid @RequestBody ModuleUpdateDTO request){
+        String response = courseService.updateModule(request);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @PostMapping("/create-lesson")
+    public ResponseEntity<?>createLesson(@Valid @RequestBody LessonCreateDTO request){
+        String response = courseService.createLesson(request);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/update-lesson")
+    public ResponseEntity<?>updateLesson(@Valid @RequestBody LessonUpdateDTO request){
+        String response = courseService.updateLesson(request);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+    /*
+    @DeleteMapping("/delete-lesson")
+    public ResponseEntity<?> deleteLesson(@Valid @RequestParam("slug") String slug){
     }
 
     @DeleteMapping("/delete-course")
     public ResponseEntity<?> DeleteModule(@Valid @RequestParam("slug") String slug){
 
-    }
-
-    @PostMapping("/create-lesson")
-    public ResponseEntity<?>createLesson(@Valid @RequestBody ){
-    }
-
-    @PatchMapping("/update-lesson")
-    public ResponseEntity<?>updateLesson(@Valid @RequestBody ){
-    }
-
-    @DeleteMapping("/delete-lesson")
-    public ResponseEntity<?> deleteLesson(@Valid @RequestParam("slug") String slug){
     }
 
     @GetMapping("/student-recommended-lesson")
@@ -174,8 +182,6 @@ public class CourseController {
     public ResponseEntity<?> allTags(@RequestParam(name = "search", required = false ) String search){
 
     }
-
-
   */
 
 

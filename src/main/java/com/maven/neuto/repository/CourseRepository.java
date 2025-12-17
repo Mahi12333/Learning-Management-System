@@ -60,7 +60,7 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
               c.size,
               c.archive,
               c.createdAt,
-              c.updatedAt,
+              c.updatedAt
         """,
             countQuery = """
         SELECT COUNT(c.id)

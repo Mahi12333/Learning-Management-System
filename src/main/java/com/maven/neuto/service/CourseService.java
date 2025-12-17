@@ -1,8 +1,7 @@
 package com.maven.neuto.service;
 
 
-import com.maven.neuto.payload.request.course.CourseCreateDTO;
-import com.maven.neuto.payload.request.course.UpdateCourseDTO;
+import com.maven.neuto.payload.request.course.*;
 import com.maven.neuto.payload.response.PaginatedResponse;
 import com.maven.neuto.payload.response.course.CourseResponseDTO;
 import com.maven.neuto.payload.response.course.PublicCourseResponseDTO;
@@ -15,4 +14,12 @@ public interface CourseService {
     PaginatedResponse<PublicCourseResponseDTO> publicCourse(Integer pageNumber, Integer pageSize, String sortOrder, String sortBy);
 
     PaginatedResponse<PublicCourseResponseDTO> PublicRecommendedCourse(Integer pageNumber, Integer pageSize, String sortOrder, String sortBy);
+
+    String createModule(ModuleCreateDTO request);
+
+    String updateModule(ModuleUpdateDTO request);
+
+    String createLesson(LessonCreateDTO request);
+
+    String updateLesson(LessonUpdateDTO request);
 }

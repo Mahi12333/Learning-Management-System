@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 public class ModuleUpdateDTO {
     private String name;
-    private String moduleSlug;
+    private Long moduleId;
     private Boolean archive;
     private Boolean onlyFetch;
+    private Long courseId;
 }

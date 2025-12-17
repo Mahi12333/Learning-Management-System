@@ -1,5 +1,7 @@
 package com.maven.neuto.model;
 
+import com.maven.neuto.config.StringListConverter;
+import com.maven.neuto.payload.request.course.QuizQuestion;
 import com.vladmihalcea.hibernate.type.json.JsonType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -58,8 +60,9 @@ public class Lesson extends BaseEntity {
     @Column(name = "images_path")
     private String imagesPath;
 
+    @Convert(converter = StringListConverter.class)
     @Column(name = "tags", columnDefinition = "TEXT")
-    private String tags = "[]";
+    private List<String> tags = new ArrayList<>();
 
     @Column(name = "video_duration")
     private Long videoDuration;
@@ -67,14 +70,13 @@ public class Lesson extends BaseEntity {
     @Column(name = "size")
     private Long size;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "community_id")
     private Community lessonCommunity;
 
     @Type(JsonType.class)
-    @Column(columnDefinition = "json")
-    private Map<String, Object> quize;
+    @Column(name = "quize", columnDefinition = "jsonb") // postgres
+    private List<QuizQuestion> quize;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLessonHistory> userLessonHistories = new ArrayList<>();

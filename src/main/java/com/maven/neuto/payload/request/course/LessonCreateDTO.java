@@ -15,8 +15,9 @@ public class LessonCreateDTO {
     private String description;
     private String path;
     private Integer size;
-    private String moduleSlug;
+    private Long moduleId;
     private List<String> tags;
     private Boolean archive;
-    private Map<String, Object> quize;
+    private List<QuizQuestion> quize;
+
 }

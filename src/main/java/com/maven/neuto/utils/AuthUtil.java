@@ -1,5 +1,6 @@
 package com.maven.neuto.utils;
 
+import com.maven.neuto.exception.APIException;
 import com.maven.neuto.exception.ResourceNotFoundException;
 import com.maven.neuto.model.Community;
 import com.maven.neuto.model.User;
@@ -9,6 +10,7 @@ import com.maven.neuto.security.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,7 +30,7 @@ public class AuthUtil {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl userDetails)) {
-            throw new UsernameNotFoundException("no.authenticated.user.found");
+            throw new APIException("no.authenticated.user.found", HttpStatus.BAD_REQUEST);
         }
 
         Long userId = userDetails.getId();
@@ -79,11 +81,11 @@ public class AuthUtil {
     public Long communityId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl userDetails)) {
-            throw new UsernameNotFoundException("no.authenticated.user.found");
+            throw new APIException("no.authenticated.user.found", HttpStatus.BAD_REQUEST);
         }
         Long userId = userDetails.getId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + authentication.getName()));
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found with username: " + authentication.getName()));
         Long communityId = user.getUserCommunity().getId();
         Community community = communityRepository.findById(user.getUserCommunity().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("community.not.found"));
