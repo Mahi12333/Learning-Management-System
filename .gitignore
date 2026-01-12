@@ -35,4 +35,4 @@ build/
 ## application propaties
 
 /src/main/resources/application-dev.yml
-/src/main/resources/firebase-notification.json
+firebase*.json
