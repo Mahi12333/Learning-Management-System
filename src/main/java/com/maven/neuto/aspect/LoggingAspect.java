@@ -1,4 +1,4 @@
-package com.maven.neuto.aspect;
+/*package com.maven.neuto.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -39,3 +39,4 @@ public class LoggingAspect {
         MDC.clear();
     }
 }
+*/

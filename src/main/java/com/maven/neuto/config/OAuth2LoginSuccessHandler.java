@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class OAuth2LoginSuccessHandler extends SavedRequestAwareAuthenticationSu
     String username;
     String idAttributeKey;
 
+    @Deprecated
     public void onAuthenticationSuccessss(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
         OAuth2AuthenticationToken oAuth2AuthenticationToken = (OAuth2AuthenticationToken) authentication;
         log.info("OAuth2 Login Success for Client: {}", oAuth2AuthenticationToken.getAuthorizedClientRegistrationId());

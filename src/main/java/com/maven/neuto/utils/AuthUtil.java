@@ -41,11 +41,15 @@ public class AuthUtil {
     public User currentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetailsImpl userDetails)) {
-            throw new UsernameNotFoundException("no.authenticated.user.found");
+            throw new APIException("no.authenticated.user.found", HttpStatus.BAD_REQUEST);
         }
         Long userId = userDetails.getId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + authentication.getName()));
+                .orElseThrow(() -> new APIException("User Not Found with username", HttpStatus.BAD_REQUEST));
+
+        log.info("currentUser info name--- {}", user.getFirstName());
+        log.info("currentUser email--- {}", user.getEmail());
+
         return user;
     }
 

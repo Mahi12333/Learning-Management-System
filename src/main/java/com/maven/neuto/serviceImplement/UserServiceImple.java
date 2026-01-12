@@ -1,10 +1,7 @@
 package com.maven.neuto.serviceImplement;
 
 
-import com.maven.neuto.emun.ProfileComplete;
-import com.maven.neuto.emun.Step;
-import com.maven.neuto.emun.UserInviteType;
-import com.maven.neuto.emun.UserType;
+import com.maven.neuto.emun.*;
 import com.maven.neuto.exception.APIException;
 import com.maven.neuto.exception.ResourceNotFoundException;
 import com.maven.neuto.mapstruct.UserMapper;
@@ -60,6 +57,7 @@ public class UserServiceImple implements UserService {
     private final GroupUserRepository groupUserRepository;
     private final UserHelperMethod userHelperMethod;
     private final TemplateHelper templateHelper;
+    private final NotificationService notificationService;
 
     @Value("${PROFILE_URL}")
     private String PROFILE_URL;
@@ -267,6 +265,8 @@ public class UserServiceImple implements UserService {
         User userNameExists = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username"));
         Long loggedInUserId = authUtil.loggedInUserIdForTesting();
+        User senderUser = userRepository.findUserById(loggedInUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with userId"));
         if (userNameExists.getId().equals(loggedInUserId)) {
             throw new APIException("You cannot follow/unfollow yourself", HttpStatus.BAD_REQUEST);
         }
@@ -274,9 +274,18 @@ public class UserServiceImple implements UserService {
         if(existingFollow){
             userFollowRepository.deleteByFollowerIdAndFollowingId(loggedInUserId, userNameExists.getId());
 
-            // Optional: Send unfollow notification
+            //  Send unfollow notification
             /*notificationService.sendNotification(loggedInUserId, targetUser.getId(), "User unfollowed you",
                     authUtil.getLoggedInUsername() + " has unfollowed you.", "UNFOLLOW", loggedInUserId);*/
+
+            notificationService.sendNotification(
+                    senderUser,
+                    userNameExists,
+                    "User Unfollowed",
+                    authUtil.loggedInUserIdForTesting() + " has unfollowed you.",
+                    SourceType.FOLLOW,
+                    loggedInUserId
+            );
 
             return "User unfollowed successfully";
         }else {
@@ -291,6 +300,15 @@ public class UserServiceImple implements UserService {
             // Send follow notification
             /*notificationService.sendNotification(loggedInUserId, targetUser.getId(), "New Follower",
                     authUtil.getLoggedInUsername() + " started following you.", "FOLLOW", follow.getId());*/
+            notificationService.sendNotification(
+                    senderUser,
+                    userNameExists,
+                    "New Follower",
+                    authUtil.loggedInUserIdForTesting() + " started following you.",
+                    SourceType.FOLLOW,
+                    follow.getId()
+            );
+
 
             return "User followed successfully";
         }

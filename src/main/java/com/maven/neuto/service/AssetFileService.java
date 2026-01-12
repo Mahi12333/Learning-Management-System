@@ -1,8 +1,6 @@
 package com.maven.neuto.service;
 
-import com.maven.neuto.payload.request.file.PresignedUrlRequest;
 import com.maven.neuto.payload.response.file.PresignedUrlResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

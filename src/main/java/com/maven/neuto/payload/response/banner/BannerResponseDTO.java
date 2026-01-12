@@ -15,7 +15,7 @@ public class BannerResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private String courseSlug;
+    private Long courseId;
     private String imageUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

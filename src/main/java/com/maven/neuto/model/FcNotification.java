@@ -19,7 +19,7 @@ import lombok.Setter;
 indexes = {
         @Index(name = "idx_receiver", columnList = "receiver_id")
 })
-public class Notification extends BaseEntity {
+public class FcNotification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

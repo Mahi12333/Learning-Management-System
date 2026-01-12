@@ -9,4 +9,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Auditable {
+    String action();
+    String entity() default "";
+//    boolean captureOld() default false;
+     String idField() default "id";
+
+
 }

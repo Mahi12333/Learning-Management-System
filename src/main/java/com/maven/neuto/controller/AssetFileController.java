@@ -21,7 +21,7 @@ public class AssetFileController {
     private final AssetFileService assetFileService;
 
     @PostMapping("/file-upload")
-    public ResponseEntity<PresignedUrlResponse> uploadTemp(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) throws Exception {
+    public ResponseEntity<PresignedUrlResponse> uploadTemp(@RequestParam("file") MultipartFile file, @RequestParam("name") String name) throws IOException {
         PresignedUrlResponse tempUrl = assetFileService.uploadToTemp(file, name);
         return ResponseEntity.ok(tempUrl);
     }

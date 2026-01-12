@@ -1,5 +1,7 @@
 package com.maven.neuto.serviceImplement;
 
+import com.maven.neuto.aspect.Auditable;
+import com.maven.neuto.config.AuditEventListener;
 import com.maven.neuto.emun.BookMark;
 import com.maven.neuto.exception.ResourceNotFoundException;
 import com.maven.neuto.mapstruct.ShortContentMapper;
@@ -7,6 +9,7 @@ import com.maven.neuto.model.ShortContentUpload;
 import com.maven.neuto.model.User;
 import com.maven.neuto.payload.request.content.ShortContentCreateDTO;
 import com.maven.neuto.payload.request.content.ShortContentUpdatedDTO;
+import com.maven.neuto.payload.request.log.AuditEvent;
 import com.maven.neuto.payload.response.PaginatedResponse;
 import com.maven.neuto.payload.response.banner.BannerResponseDTO;
 import com.maven.neuto.payload.response.content.ShortContentResponseDTO;
@@ -18,6 +21,7 @@ import com.maven.neuto.utils.AuthUtil;
 import com.maven.neuto.utils.ShortContentHelperMethod;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,11 +42,15 @@ public class ContentServiceImple implements ContentService {
     private final ShortContentRepository shortContentRepository;
     private final BookmarkRepository bookmarkRepository;
     private final ShortContentHelperMethod shortContentHelperMethod;
+    private final ApplicationEventPublisher eventPublisher;
 
+    //! AOP + Event Publisher Audit Log Implementation is in Aspect Package
+    @Auditable(action = "CREATE", entity = "SHORT_CONTENT")
     @Transactional
     @Override
     public ShortContentResponseDTO createShortContent(ShortContentCreateDTO request) {
         User currentUser = authUtil.currentUser();
+        log.info("currentUser info3---{}", currentUser);
         ShortContentUpload content = shortContentMapper.toCreateShortContentEntity(request);
         content.setCreator(currentUser);
         content.setShortContentCommunity(currentUser.getUserCommunity());
@@ -60,6 +68,19 @@ public class ContentServiceImple implements ContentService {
         }
         shortContentMapper.updateShortContentFromDto(request, content);
         ShortContentUpload updated = shortContentRepository.save(content);
+
+        /*//! This is for Event Publisher Audit Log
+        eventPublisher.publishEvent(
+                AuditEvent.builder()
+                        .action("UPDATE")
+                        .entity("SHORT_CONTENT")
+                        .entityId(Long.valueOf(updated.getId()))
+                        .userId(authUtil.loggedInUserId())
+                        .oldValue(content)
+                        .newValue(updated)
+                        .build()
+        );*/
+
         return shortContentMapper.toShortContentResponseDto(updated);
     }
 

@@ -16,6 +16,7 @@ public interface BannerMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "communityId", expression = "java(communityId)")
     @Mapping(target = "bannerCreator", expression = "java(createdBy)")
+    @Mapping(target = "bannerCourse", source = "dto.courseId")
     Banner toEntity(BannerCreateDTO dto, Long communityId, Long createdBy, @Context MapperContext context);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

@@ -6,8 +6,6 @@ import com.maven.neuto.emun.ProfileComplete;
 import com.maven.neuto.emun.Status;
 import com.maven.neuto.emun.Step;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -201,11 +199,11 @@ public class User extends BaseEntity {
 
     // Sent Notification
     @OneToMany(mappedBy = "senderNotification", cascade = CascadeType.ALL)
-    private List<Notification> sentNotification = new ArrayList<>();
+    private List<FcNotification> sentNotification = new ArrayList<>();
 
     // Received Notification
     @OneToMany(mappedBy = "receiverNotification", cascade = CascadeType.ALL)
-    private List<Notification> receivedNotification = new ArrayList<>();
+    private List<FcNotification> receivedNotification = new ArrayList<>();
 
     @OneToMany(mappedBy = "notificationPermissionUser", cascade = CascadeType.ALL)
     private List<NotificationPermission> notificationPermissionsUsers = new ArrayList<>();

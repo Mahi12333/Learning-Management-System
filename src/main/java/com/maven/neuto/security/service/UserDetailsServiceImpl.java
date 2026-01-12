@@ -1,9 +1,11 @@
 package com.maven.neuto.security.service;
 
+import com.maven.neuto.exception.APIException;
 import com.maven.neuto.model.User;
 import com.maven.neuto.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("Lodding user by email: {}", email);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
+                .orElseThrow(() -> new APIException("User Not Found with email", HttpStatus.BAD_REQUEST));
         return buildUserDetails(user);
     }
 
@@ -34,7 +36,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
         log.info("Loading user by id: {}", id);
         User user = userRepository.findUserById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User Not Found with id: " + id));
+                .orElseThrow(() -> new APIException("User Not Found with id", HttpStatus.BAD_REQUEST));
         log.info("Loading user by user: {}", user);
         return buildUserDetails(user);
     }

@@ -63,11 +63,9 @@ public interface UserMapper {
     @Mapping(source = "createdAt", target = "createdAt", qualifiedByName = "convertInstantToLocalDateTime")
     @Mapping(source = "updatedAt", target = "updatedAt", qualifiedByName = "convertInstantToLocalDateTime")
     @Mapping(source = "role.id", target = "roleId")
-//    @Mapping(target = "access", ignore = true)
     ProfileVisitDTO toUserProfileVisitDTO(User user);
 
     SuperAdminProfileResponseDTO toSuperAminProfileDTO(User user);
-
 
     @Named("convertInstantToLocalDateTime")
     default LocalDateTime convertInstantToLocalDateTime(Instant instant) {

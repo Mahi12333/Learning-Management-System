@@ -1,5 +1,6 @@
 package com.maven.neuto.serviceImplement;
 
+import com.maven.neuto.aspect.Auditable;
 import com.maven.neuto.exception.APIException;
 import com.maven.neuto.exception.ResourceNotFoundException;
 import com.maven.neuto.mapstruct.BannerMapper;
@@ -32,16 +33,18 @@ public class BannerServiceImple implements BannerService {
     private final CommunityRepository communityRepository;
     private final MapperContext mapperContext;
 
+    @Auditable(action = "DELETE", entity = "BANNER")
     @Override
     public void deleteBanner(Long bannerId) {
         Banner banner = bannerRepository.findById(bannerId).orElseThrow(()-> new ResourceNotFoundException("Banner not found!"));
         bannerRepository.delete(banner);
     }
 
+    @Auditable(action = "CREATE", entity = "BANNER")
     @Override
     public BannerResponseDTO createBanner(BannerCreateDTO request) {
         Long communityId = authUtil.communityId();
-        Long userId = authUtil.loggedInUserId();
+        Long userId = authUtil.loggedInUserIdForTesting();
         if(bannerRepository.existsByNameAndCommunityId(request.getName(), communityId)){
             throw new APIException("Banner name already exists", HttpStatus.BAD_REQUEST);
         }
@@ -50,6 +53,7 @@ public class BannerServiceImple implements BannerService {
         return bannerMapper.toResponseDto(savedBanner);
     }
 
+    @Auditable(action = "UPDATE", entity = "BANNER")
     @Override
     public BannerResponseDTO updatedBanner(BannerUpdateDTO request) {
         Banner banner = bannerRepository.findById(request.getBannerId()).orElseThrow(()-> new ResourceNotFoundException("Banner not found!"));
