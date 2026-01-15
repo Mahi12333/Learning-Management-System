@@ -26,7 +26,6 @@ A complete **Learning Management System** built with **Java 21 & Spring Boot**, 
 
 * Create, update, and delete courses
 * Assign instructors/teachers to courses
-* Enroll students into courses
 * Manage course categories, tags, and metadata
 * Expose paginated and sortable course listings
 
@@ -106,7 +105,7 @@ A complete **Learning Management System** built with **Java 21 & Spring Boot**, 
 
 * JWT-based authentication (login, token validation)
 * Spring Security configuration (filters, authentication providers)
-* Method-level authorization using annotations (e.g. \`@PreAuthorize\`)
+* Method-level authorization using annotations ()
 * Password encoding and secure credential handling
 
 ---
@@ -127,15 +126,15 @@ A complete **Learning Management System** built with **Java 21 & Spring Boot**, 
 
 ## 🛠️ Tech Stack
 
-| Component     | Technology                            |
-| ------------- |---------------------------------------|
-| Backend       | Java 21, Spring Boot                  |
-| Security      | Spring Security, JWT                  |
-| Database      | MySQL or PostgreSQL                   |
-| ORM           | Hibernate, Spring Data JPA            |
-| Documentation | Swagger / OpenAPI, Insomnia           |
-| Build Tool    | Maven                                 |
-| Storage       | Local filesystem / Cloudinary / S3    |
+| Component     | Technology                   |
+| ------------- |------------------------------|
+| Backend       | Java 21, Spring Boot         |
+| Security      | Spring Security, JWT         |
+| Database      | PostgreSQL                   |
+| ORM           | Hibernate, Spring Data JPA   |
+| Documentation | Swagger / OpenAPI, Insomnia  |
+| Build Tool    | Maven                        |
+| Storage       | Local filesystem / Cloudinary |
 | Real-time     | WebSocket (Spring), STOMP / Socket.IO |
 
 ---
@@ -286,7 +285,6 @@ http://localhost:8080/swagger-ui/index.html
 
 ## 🧪 Testing
 
-* Unit tests: JUnit 5 + Mockito
 * Integration tests: Spring Boot Test, Testcontainers (optional for DB)
 * Postman collection: `/docs/postman_collection.json` (optional)
 
